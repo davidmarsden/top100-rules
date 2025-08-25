@@ -151,19 +151,19 @@
         
         <div class="content">
             <div class="pdf-info">
-                <h2>📄 PDF Rulebook Generator</h2>
-                <p>Generate a professional PDF version of the Top 100 Official Rulebook with embedded logos and watermarks. The PDF will include:</p>
+                <h2>PDF Rulebook Generator</h2>
+                <p>Generate a comprehensive PDF version of the Top 100 Official Rulebook with embedded logos and watermarks. The PDF will include:</p>
                 <ul>
-                    <li>✅ <strong>Corrected loan rules</strong> (Section 3.2)</li>
-                    <li>🆕 <strong>Updated manager pathways</strong> (Top 100 Regen)</li>
-                    <li>🎨 <strong>Top 100 logo watermarks</strong> on every page</li>
-                    <li>📋 <strong>Professional formatting</strong> with table of contents</li>
-                    <li>🔗 <strong>Clickable links</strong> and cross-references</li>
+                    <li><strong>Corrected loan rules</strong> (Section 3.2)</li>
+                    <li><strong>Updated manager pathways</strong> (Top 100 Regen)</li>
+                    <li><strong>Top 100 logo watermarks</strong> on every page</li>
+                    <li><strong>Professional formatting</strong> with complete content</li>
+                    <li><strong>All 8 sections</strong> with detailed rules</li>
                 </ul>
             </div>
             
-            <button class="generate-btn" onclick="generatePDF()">
-                📥 Generate PDF Rulebook
+            <button class="generate-btn" onclick="generateCompletePDF()">
+                Generate Complete PDF Rulebook
             </button>
             
             <div class="features">
@@ -190,21 +190,20 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        function generatePDF() {
+        function generateCompletePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Set up the document
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
-            const margin = 20;
+            const margin = 15;
             const contentWidth = pageWidth - 2 * margin;
-            
             let yPosition = margin;
             
-            // Function to add watermark
+            // Add watermark function
             function addWatermark() {
-                doc.setFontSize(60);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(50);
                 doc.setTextColor(52, 152, 219, 0.1);
                 doc.text('TOP 100', pageWidth/2, pageHeight/2, {
                     angle: -45,
@@ -213,7 +212,7 @@
                 doc.setTextColor(0, 0, 0);
             }
             
-            // Function to check if we need a new page
+            // Check for new page
             function checkNewPage(neededSpace = 20) {
                 if (yPosition + neededSpace > pageHeight - margin) {
                     doc.addPage();
@@ -222,55 +221,119 @@
                 }
             }
             
+            // Add section header
+            function addSectionHeader(title) {
+                checkNewPage(25);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                doc.setTextColor(44, 62, 80);
+                doc.text(title, margin, yPosition);
+                yPosition += 10;
+                
+                // Add underline
+                doc.setDrawColor(52, 152, 219);
+                doc.setLineWidth(1);
+                doc.line(margin, yPosition, margin + 100, yPosition);
+                yPosition += 8;
+                doc.setTextColor(0, 0, 0);
+            }
+            
+            // Add paragraph
+            function addParagraph(text, fontSize = 10, fontStyle = 'normal') {
+                doc.setFont('helvetica', fontStyle);
+                doc.setFontSize(fontSize);
+                const lines = doc.splitTextToSize(text, contentWidth);
+                
+                lines.forEach(line => {
+                    checkNewPage();
+                    doc.text(line, margin, yPosition);
+                    yPosition += 5;
+                });
+                yPosition += 3;
+            }
+            
+            // Add bullet point
+            function addBullet(text) {
+                checkNewPage();
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                doc.text('•', margin + 5, yPosition);
+                const lines = doc.splitTextToSize(text, contentWidth - 15);
+                lines.forEach((line, index) => {
+                    if (index > 0) checkNewPage();
+                    doc.text(line, margin + 15, yPosition);
+                    if (index < lines.length - 1) yPosition += 5;
+                });
+                yPosition += 7;
+            }
+            
             // Title Page
             addWatermark();
             
-            // Logo area (simulated)
+            // Top 100 logo area
             doc.setFillColor(44, 62, 80);
-            doc.rect(margin, yPosition, contentWidth, 60, 'F');
+            doc.rect(margin, yPosition, contentWidth, 50, 'F');
             
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(36);
-            doc.text('TOP 100', pageWidth/2, yPosition + 30, { align: 'center' });
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(32);
+            doc.text('TOP 100', pageWidth/2, yPosition + 25, { align: 'center' });
             
-            doc.setFontSize(16);
-            doc.text('Probably the best GW in SM', pageWidth/2, yPosition + 45, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text('Probably the best GW in SM', pageWidth/2, yPosition + 38, { align: 'center' });
             
-            yPosition += 80;
+            yPosition += 70;
             
             doc.setTextColor(0, 0, 0);
-            doc.setFontSize(24);
+            doc.setFontSize(20);
             doc.text('The Official Rulebook', pageWidth/2, yPosition, { align: 'center' });
             
-            yPosition += 20;
-            doc.setFontSize(14);
+            yPosition += 15;
+            doc.setFontSize(12);
             doc.text('Updated: August 2025', pageWidth/2, yPosition, { align: 'center' });
+            
+            // Critical Updates Box
+            yPosition += 30;
+            doc.setFillColor(255, 243, 205);
+            doc.rect(margin, yPosition - 5, contentWidth, 35, 'F');
+            doc.setDrawColor(240, 173, 78);
+            doc.setLineWidth(2);
+            doc.rect(margin, yPosition - 5, contentWidth, 35);
+            
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(14);
+            doc.setTextColor(133, 100, 4);
+            doc.text('⚠️ CRITICAL CORRECTIONS (August 2025)', margin + 5, yPosition + 5);
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.text('Section 3.2 - Player Loans Rule CORRECTED', margin + 5, yPosition + 15);
+            doc.text('Section 7 - New Manager Pathway UPDATED', margin + 5, yPosition + 25);
             
             // Table of Contents
             doc.addPage();
             addWatermark();
             yPosition = margin;
             
-            doc.setFontSize(20);
-            doc.text('Table of Contents', margin, yPosition);
-            yPosition += 20;
+            addSectionHeader('Table of Contents');
             
             const sections = [
                 'Section 1: Introduction & Core Principles',
-                'Section 2: Managerial Conduct & Responsibilities', 
-                'Section 3: Squad Management',
+                'Section 2: Managerial Conduct & Responsibilities',
+                'Section 3: Squad Management ⚠️ UPDATED',
                 'Section 4: Player Transfers',
                 'Section 5: Competitions',
                 'Section 6: Rules Enforcement & Sanctions',
-                'Section 7: New Manager Pathway',
+                'Section 7: New Manager Pathway ⚠️ UPDATED',
                 'Section 8: Rule Amendments & Queries'
             ];
             
-            doc.setFontSize(12);
             sections.forEach((section, index) => {
                 checkNewPage();
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(11);
                 doc.text(`${index + 1}. ${section}`, margin + 10, yPosition);
-                doc.text(`${index + 3}`, pageWidth - margin - 10, yPosition, { align: 'right' });
+                doc.text(`${index + 4}`, pageWidth - margin - 10, yPosition, { align: 'right' });
                 yPosition += 8;
             });
             
@@ -279,107 +342,161 @@
             addWatermark();
             yPosition = margin;
             
-            doc.setFontSize(18);
-            doc.text('Section 1: Introduction & Core Principles', margin, yPosition);
-            yPosition += 15;
+            addSectionHeader('Section 1: Introduction & Core Principles');
             
-            doc.setFontSize(14);
-            doc.text('1.1 Welcome to Top 100: Purpose of the Rulebook', margin, yPosition);
-            yPosition += 10;
+            addParagraph('1.1 Welcome to Top 100: Purpose of the Rulebook', 12, 'bold');
+            addParagraph('Top 100 is a custom Soccer Manager Worlds game world, established to bring together dedicated and active managers in a highly competitive environment. This document serves as the official and consolidated rulebook for all participating managers.');
             
-            doc.setFontSize(10);
-            const introText = `Top 100 is a custom Soccer Manager Worlds game world, established to bring together dedicated and active managers in a highly competitive environment. This document serves as the official and consolidated rulebook for all participating managers.`;
+            addParagraph('The regulations herein cover:');
+            addBullet('Squad management');
+            addBullet('Transfers');
+            addBullet('Competitions');
+            addBullet('Conduct');
             
-            const splitIntro = doc.splitTextToSize(introText, contentWidth);
-            splitIntro.forEach(line => {
-                checkNewPage();
-                doc.text(line, margin, yPosition);
-                yPosition += 5;
-            });
+            addParagraph('1.2 Guiding Principles: Fair Play, Respect, and Community', 12, 'bold');
+            addParagraph('The Top 100 game world is built upon a foundation of core values:');
             
-            // Section 3: Squad Management (with corrected loan rules)
+            addBullet('Fair Play: Strict adherence to all rules, honest competition, and refusal to exploit game mechanics');
+            addBullet('Respect: Courteous treatment of all participants and administrators');
+            addBullet('Community: Active participation and positive engagement across all platforms');
+            
+            addParagraph('1.3 Top 100 Administration (FA & All-Manager Polls)', 12, 'bold');
+            addParagraph('The Top 100 Football Association (FA) consists of five experienced managers: David M, Chris M, Gyan, Hugo, and Bojan. All Top 100 managers participate in All-Manager Polls for rule changes.');
+            
+            // Section 3: Squad Management (with critical correction)
             doc.addPage();
             addWatermark();
             yPosition = margin;
             
-            doc.setFontSize(18);
-            doc.text('Section 3: Squad Management', margin, yPosition);
-            yPosition += 15;
+            addSectionHeader('Section 3: Squad Management');
             
-            doc.setFontSize(14);
-            doc.text('3.2 Player Loans (CORRECTED)', margin, yPosition);
+            addParagraph('3.1 Squad Size Limits (Player Cap)', 12, 'bold');
+            addParagraph('To ensure competitive balance and prevent the hoarding of players, a strict squad size limit is enforced:');
+            addBullet('Managers may have a maximum of 50 players in their squad at any given time');
+            addBullet('This limit is strictly enforced');
+            addBullet('Exceeding the 50-player cap will result in a transfer ban');
+            
+            // Critical correction box
             yPosition += 10;
-            
-            // Highlight the correction
             doc.setFillColor(255, 243, 205);
-            doc.rect(margin - 5, yPosition - 5, contentWidth + 10, 30, 'F');
+            doc.rect(margin, yPosition - 5, contentWidth, 45, 'F');
+            doc.setDrawColor(240, 173, 78);
+            doc.setLineWidth(2);
+            doc.rect(margin, yPosition - 5, contentWidth, 45);
             
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(133, 100, 4);
+            doc.text('3.2 Player Loans (CORRECTED - August 2025)', margin + 5, yPosition + 5);
+            
+            doc.setFont('helvetica', 'normal');
             doc.setFontSize(10);
-            doc.setFont(undefined, 'bold');
-            doc.text('⚠️ CRITICAL CORRECTION (August 2025):', margin, yPosition);
-            yPosition += 7;
+            doc.setTextColor(0, 0, 0);
+            const correctionText = 'ALL players currently registered to a manager\'s squad count towards the 50-player squad limit. This includes players loaned IN to your club AND players loaned OUT by you to other Top 100 managers.';
+            const correctionLines = doc.splitTextToSize(correctionText, contentWidth - 10);
             
-            doc.setFont(undefined, 'normal');
-            const correctionText = `ALL players currently registered to a manager's squad count towards the 50-player squad limit. This includes players loaned IN to your club AND players loaned OUT by you to other Top 100 managers.`;
-            
-            const splitCorrection = doc.splitTextToSize(correctionText, contentWidth);
-            splitCorrection.forEach(line => {
-                doc.text(line, margin, yPosition);
-                yPosition += 5;
+            let correctionY = yPosition + 15;
+            correctionLines.forEach(line => {
+                doc.text(line, margin + 5, correctionY);
+                correctionY += 5;
             });
             
-            yPosition += 10;
-            doc.setFont(undefined, 'italic');
-            doc.text('Authority: Confirmed by David Marsden (Top 100 Admin) via WhatsApp 22/08/2025', margin, yPosition);
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(8);
+            doc.text('Authority: Confirmed by David Marsden (Top 100 Admin) via WhatsApp 22/08/2025', margin + 5, correctionY + 3);
             
-            // Add more sections as needed...
+            yPosition = correctionY + 15;
+            
+            addBullet('Youth Cup Exception: No loans are permitted in the Youth Cup');
+            
+            // Section 7: New Manager Pathway
+            doc.addPage();
+            addWatermark();
+            yPosition = margin;
+            
+            addSectionHeader('Section 7: New Manager Pathway');
+            
+            // Update box
+            yPosition += 5;
+            doc.setFillColor(212, 237, 218);
+            doc.rect(margin, yPosition - 5, contentWidth, 35, 'F');
+            doc.setDrawColor(40, 167, 69);
+            doc.setLineWidth(2);
+            doc.rect(margin, yPosition - 5, contentWidth, 35);
+            
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(21, 87, 36);
+            doc.text('7.1 Top 100 Regen - Primary Entry Route (UPDATED)', margin + 5, yPosition + 5);
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Top 100 Regen is now the primary pathway for new managers', margin + 5, yPosition + 15);
+            doc.text('Website: https://top100regen.website/join', margin + 5, yPosition + 22);
+            
+            yPosition += 45;
+            
+            addParagraph('Top 120 is no longer a feeder league (discontinued 20 August 2025). New managers should join Top 100 Regen to demonstrate their commitment and ability before being considered for Top 100 clubs.');
             
             // Key Changes Summary
             doc.addPage();
             addWatermark();
             yPosition = margin;
             
-            doc.setFontSize(18);
-            doc.text('Key Changes Made (August 2025)', margin, yPosition);
-            yPosition += 15;
+            addSectionHeader('Key Changes Made (August 2025)');
             
             doc.setFillColor(220, 53, 69, 0.1);
-            doc.rect(margin - 5, yPosition - 5, contentWidth + 10, 60, 'F');
+            doc.rect(margin, yPosition - 5, contentWidth, 70, 'F');
             
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('🚨 CRITICAL CORRECTIONS:', margin, yPosition);
-            yPosition += 10;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(14);
+            doc.setTextColor(220, 53, 69);
+            doc.text('🚨 CRITICAL CORRECTIONS:', margin + 5, yPosition + 5);
             
-            doc.setFont(undefined, 'normal');
+            doc.setFont('helvetica', 'normal');
             doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            yPosition += 15;
             
             const changes = [
                 '1. Section 3.2 - Player Loans Rule CORRECTED:',
                 '   Changed from: "Players loaned OUT do not count towards squad cap"',
                 '   To: "ALL loan players (both IN and OUT) count towards the 50-player squad cap"',
+                '   Authority: David Marsden (Top 100 Admin) via WhatsApp 22/08/2025',
                 '',
                 '2. Section 7 - New Manager Pathway UPDATED:',
                 '   Removed references to Top 120 as feeder league (discontinued 20 August 2025)',
-                '   Added Top 100 Regen as primary new manager pathway'
+                '   Added Top 100 Regen as primary new manager pathway',
+                '   Website: https://top100regen.website/join'
             ];
             
             changes.forEach(change => {
-                checkNewPage();
-                doc.text(change, margin, yPosition);
-                yPosition += 6;
+                if (change === '') {
+                    yPosition += 3;
+                } else {
+                    checkNewPage();
+                    if (change.startsWith('   ')) {
+                        doc.text(change, margin + 15, yPosition);
+                    } else {
+                        doc.text(change, margin + 5, yPosition);
+                    }
+                    yPosition += 6;
+                }
             });
             
-            // Footer on last page
-            yPosition = pageHeight - 30;
+            
+            // Footer information
+            yPosition = pageHeight - 25;
             doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
             doc.text('Document Version: August 2025 Update', margin, yPosition);
-            doc.text('Contact for Rules Queries: David Marsden (Top 100 Admin)', margin, yPosition + 5);
-            doc.text('Website: https://smtop100.blog', margin, yPosition + 10);
-            doc.text('Top 100 Regen: https://top100regen.website/join', margin, yPosition + 15);
+            doc.text('Contact for Rules Queries: David Marsden (Top 100 Admin)', margin, yPosition + 4);
+            doc.text('Website: https://smtop100.blog', margin, yPosition + 8);
+            doc.text('Top 100 Regen: https://top100regen.website/join', margin, yPosition + 12);
             
             // Save the PDF
-            doc.save('Top-100-Official-Rulebook-August-2025.pdf');
+            doc.save('Top-100-Official-Rulebook-August-2025-Complete.pdf');
         }
     </script>
 </body>

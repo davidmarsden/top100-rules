@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 100 - Official Rulebook</title>
+    <style>
+        :root {
+            --primary-blue: #2c3e50;
+            --accent-blue: #3498db;
+            --accent-red: #e74c3c;
+            --light-blue: #ecf0f1;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
+            color: white;
+            padding: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/><polygon points="100,40 120,80 160,80 130,110 140,150 100,130 60,150 70,110 40,80 80,80" fill="rgba(255,255,255,0.05)"/></svg>') center/150px 150px;
+            animation: rotate 30s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .last-updated {
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: inline-block;
+        }
+
+        /* Navigation */
+        .nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .search-box {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--light-blue);
+            border-radius: 25px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: var(--accent-blue);
+        }
+
+        /* Main Content */
+        .main {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .sidebar {
+            flex: 0 0 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            height: fit-content;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .toc {
+            list-style: none;
+        }
+
+        .toc-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .toc-link {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.5rem;
+            display: block;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .toc-link:hover, .toc-link.active {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+
+        .content {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h1 {
+            color: var(--primary-blue);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid var(--accent-blue);
+            padding-bottom: 0.5rem;
+        }
+
+        .section h2 {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .section h3 {
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .section h4 {
+            color: var(--text-dark);
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        .section ul, .section ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .section li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Special styling for corrections */
+        .correction {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            border-left: 5px solid #f0ad4e;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 10px 10px 0;
+            position: relative;
+        }
+
+        .correction::before {
+            content: '⚠️';
+            position: absolute;
+            top: -10px;
+            left: -15px;
+            background: #f0ad4e;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .correction h4 {
+            color: #856404;
+            margin-bottom: 1rem;
+        }
+
+        .update {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-left: 5px solid #28a745;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 10px 10px 0;
+            position: relative;
+        }
+
+        .update::before {
+            content: '🆕';
+            position: absolute;
+            top: -10px;
+            left: -15px;
+            background: #28a745;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .update h4 {
+            color: #155724;
+            margin-bottom: 1rem;
+        }
+
+        /* Tables */
+        .rule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .rule-table th {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .rule-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light-blue);
+        }
+
+        .rule-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .main {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                flex: none;
+                position: static;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Scroll indicators */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--accent-red);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        /* Print styles */
+        @media print {
+            .header, .nav, .sidebar { display: none; }
+            .main { flex-direction: column; }
+            .content { box-shadow: none; padding: 0; }
+            .section { display: block !important; page-break-after: always; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress"></div>
+    
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">TOP 100</h1>
+                <p class="tagline">Probably the best GW in SM</p>
+                <span class="last-updated">Last Updated: August 2025</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <strong>Official Rulebook</strong>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#updates" class="nav-link">Updates</a></li>
+                    <li><a href="#search" class="nav-link">Search</a></li>
+                </ul>
+                <input type="text" class="search-box" placeholder="Search rules..." id="searchInput">
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="container">
+            <aside class="sidebar">
+                <h3>Table of Contents</h3>
+                <ul class="toc">
+                    <li class="toc-item"><a href="#section-home" class="toc-link active">Introduction</a></li>
+                    <li class="toc-item"><a href="#section-1" class="toc-link">1. Core Principles</a></li>
+                    <li class="toc-item"><a href="#section-2" class="toc-link">2. Conduct</a></li>
+                    <li class="toc-item"><a href="#section-3" class="toc-link">3. Squad Management</a></li>
+                    <li class="toc-item"><a href="#section-4" class="toc-link">4. Transfers</a></li>
+                    <li class="toc-item"><a href="#section-5" class="toc-link">5. Competitions</a></li>
+                    <li class="toc-item"><a href="#section-6" class="toc-link">6. Enforcement</a></li>
+                    <li class="toc-item"><a href="#section-7" class="toc-link">7. Manager Pathway</a></li>
+                    <li class="toc-item"><a href="#section-8" class="toc-link">8. Rule Changes</a></li>
+                </ul>
+                
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--light-blue);">
+                    <h3>Quick Links</h3>
+                    <p><strong>Website:</strong> <a href="https://smtop100.blog" target="_blank">smtop100.blog</a></p>
+                    <p><strong>Top 100 Regen:</strong> <a href="https://top100regen.website/join" target="_blank">Join Here</a></p>
+                    <p><strong>Admin Contact:</strong> David Marsden</p>
+                </div>
+            </aside>
+
+            <div class="content">
+                <!-- Home Section -->
+                <section id="section-home" class="section active">
+                    <h1>Top 100 Official Rulebook</h1>
+                    
+                    <div class="correction">
+                        <h4>Critical Updates - August 2025</h4>
+                        <p><strong>Section 3.2 - Player Loans Rule CORRECTED:</strong></p>
+                        <p>Changed from: "Players loaned OUT do not count towards squad cap"</p>
+                        <p><strong>To: "ALL loan players (both IN and OUT) count towards the 50-player squad cap"</strong></p>
+                        <p><em>Authority: Confirmed by David Marsden (Top 100 Admin) via WhatsApp 22/08/2025</em></p>
+                    </div>
+
+                    <div class="update">
+                        <h4>New Manager Pathway Updated</h4>
+                        <p>Top 120 is no longer a feeder league (discontinued 20 August 2025)</p>
+                        <p><strong>Top 100 Regen</strong> is now the primary pathway for new managers</p>
+                        <p><a href="https://top100regen.website/join" target="_blank">Join Top 100 Regen</a></p>
+                    </div>
+
+                    <h2>Welcome to Top 100</h2>
+                    <p>Top 100 is a custom Soccer Manager Worlds game world, established to bring together dedicated and active managers in a highly competitive environment. This document serves as the official and consolidated rulebook for all participating managers.</p>
+
+                    <h3>Guiding Principles</h3>
+                    <ul>
+                        <li><strong>Fair Play:</strong> Strict adherence to all rules, honest competition, and refusal to exploit game mechanics</li>
+                        <li><strong>Respect:</strong> Courteous treatment of all participants and administrators</li>
+                        <li><strong>Community:</strong> Active participation and positive engagement across all platforms</li>
+                    </ul>
+                </section>
+
+                <!-- Section 1: Core Principles -->
+                <section id="section-1" class="section">
+                    <h1>Section 1: Introduction & Core Principles</h1>
+                    
+                    <h2>1.1 Welcome to Top 100: Purpose of the Rulebook</h2>
+                    <p>Top 100 is a custom Soccer Manager Worlds game world, established to bring together dedicated and active managers in a highly competitive environment. This document serves as the official and consolidated rulebook for all participating managers. Its primary purpose is to provide a single, clear, and comprehensive set of regulations governing all aspects of gameplay and conduct within the Top 100 community.</p>
+                    
+                    <p>The regulations herein cover:</p>
+                    <ul>
+                        <li>Squad management</li>
+                        <li>Transfers</li>
+                        <li>Competitions</li>
+                        <li>Conduct</li>
+                    </ul>
+
+                    <h2>1.2 Guiding Principles: Fair Play, Respect, and Community</h2>
+                    <p>The Top 100 game world is built upon a foundation of core values that extend beyond the digital pitch:</p>
+                    
+                    <h3>Fair Play</h3>
+                    <p>This is the cornerstone of Top 100. It encompasses strict adherence to all rules outlined in this document, a commitment to competing honestly, and a refusal to exploit any game mechanics or loopholes for an unfair advantage.</p>
+                    
+                    <h3>Respect</h3>
+                    <p>All managers are expected to treat fellow participants, including opponents and the administrative team (Top 100 FA), with courtesy and respect in all interactions.</p>
+                    
+                    <h3>Community</h3>
+                    <p>Top 100 thrives on active participation and positive engagement. Managers are encouraged to be active on the newsfeed, blog, and various communication channels such as the Facebook group, WhatsApp group chat, and Discord server.</p>
+
+                    <h2>1.3 Top 100 Administration (FA & All-Manager Polls)</h2>
+                    <p>The governance of the Top 100 game world is managed by two key bodies:</p>
+                    
+                    <h3>Top 100 Football Association (FA)</h3>
+                    <p>This is the Admin Team, composed of five experienced Top 100 managers: David M, Chris M, Gyan, Hugo, and Bojan. The Top 100 FA is entrusted with providing advice and guidance on all Top 100 issues.</p>
+                    
+                    <h3>Top 100 All-Manager Polls</h3>
+                    <p>All Top 100 managers are entitled and encouraged to deliberate and vote on proposed new rules, changes to existing rules, and any other significant issues that the administration or the community chooses to bring forward.</p>
+                </section>
+
+                <!-- Section 2: Conduct -->
+                <section id="section-2" class="section">
+                    <h1>Section 2: Managerial Conduct & Responsibilities</h1>
+                    
+                    <h2>2.1 General Expectations (Activity, Communication)</h2>
+                    <p>Active participation and clear communication are fundamental to the smooth operation and enjoyment of the Top 100 game world. Managers are expected to:</p>
+                    
+                    <h3>Maintain Activity Levels</h3>
+                    <p>Regularly log in to the Soccer Manager Worlds platform, manage their teams effectively, and ensure timely participation in all scheduled league and cup fixtures. Consistent inactivity may have repercussions, as outlined in the rules for manager sackings.</p>
+                    
+                    <h3>Engage in Communication</h3>
+                    <p>Be responsive on official Top 100 communication channels, including the in-game newsfeed, private messages, the official blog, and associated social media groups. This is particularly crucial for the timely negotiation and agreement of transfer deals and the arrangement of friendly matches for cup competitions.</p>
+
+                    <h2>2.2 Manager Contracts & Objectives</h2>
+                    <p>Rules on formal manager contracts with predefined targets have evolved.</p>
+                    <p><strong>Formal Manager Contracts</strong>, which previously involved new managers agreeing to a specific contract length and performance targets, are <strong>no longer in effect</strong>. The system where unsuccessful managers were explicitly expected to resign based on these contract terms has been discontinued.</p>
+                    <p>However, it is crucial to understand that general performance expectations still apply, and consistent underperformance can lead to manager sackings as detailed in Section 6.3.</p>
+                </section>
+
+                <!-- Section 3: Squad Management -->
+                <section id="section-3" class="section">
+                    <h1>Section 3: Squad Management</h1>
+                    
+                    <h2>3.1 Squad Size Limits (Player Cap)</h2>
+                    <p>To ensure competitive balance and prevent the hoarding of players, a strict squad size limit is enforced:</p>
+                    <ul>
+                        <li>Managers may have a <strong>maximum of 50 players</strong> in their squad at any given time.</li>
+                        <li>This limit is <strong>strictly enforced</strong>.</li>
+                        <li>Exceeding the 50-player cap will result in a <strong>transfer ban</strong>.</li>
+                    </ul>
+                    
+                    <div class="correction">
+                        <h4>3.2 Player Loans (In and Out, Squad Cap Implications) - CORRECTED</h4>
+                        <p>Player loans are permitted within Top 100, subject to the following conditions:</p>
+                        <ul>
+                            <li><strong>All loan transfers are generally allowed.</strong></li>
+                            <li><strong>Squad Cap:</strong> <strong>ALL</strong> players currently registered to a manager's squad count towards the 50-player squad limit. This includes:
+                                <ul>
+                                    <li>Players currently at your club</li>
+                                    <li>Players loaned <strong>IN</strong> to your club from other Top 100 managers</li>
+                                    <li>Players loaned <strong>OUT</strong> by you to other Top 100 managers</li>
+                                </ul>
+                            </li>
+                            <li><strong>Youth Cup Exception:</strong> A specific restriction applies to the Youth Cup, where no loans are permitted at all.</li>
+                        </ul>
+                        <p>The rule ensures all players under a manager's registration count towards their squad limit, maintaining competitive balance and preventing circumvention of the 50-player cap through loan arrangements.</p>
+                        <p><em>Authority: David Marsden (Top 100 Admin) confirmed via WhatsApp 22/08/2025: "No, they count both ways. That needs changing. Thanks."</em></p>
+                    </div>
+                </section>
+
+                <!-- Section 4: Transfers -->
+                <section id="section-4" class="section">
+                    <h1>Section 4: Player Transfers</h1>
+                    
+                    <h2>4.1 General Transfer Rules</h2>
+                    
+                    <h3>4.1.1 Binding Agreements & Cancellations</h3>
+                    <p>To maintain stability and trust in the transfer market, the following rules apply to agreed deals:</p>
+                    
+                    <h4>Binding Contracts</h4>
+                    <p>Any arrangement for the sale, purchase, or exchange of a player that has been unambiguously agreed upon by both participating managers (whether via the in-game transfer system, News Feed, chat, private message, or other communication methods) is considered a binding contract.</p>
+                    
+                    <h4>No Cancellations</h4>
+                    <p>Once a deal is accepted or agreed, it cannot be cancelled by either party.</p>
+                    
+                    <h4>Grace Period</h4>
+                    <p>A 5-minute grace period is allowed for genuine mistakes specifically when a bid is received via the Soccer Manager Worlds transfer system and accepted without any prior agreement having been made.</p>
+                    
+                    <h4>Exceptions to Binding Contract</h4>
+                    <p>A binding contract may be voided under specific circumstances:</p>
+                    <ul>
+                        <li>If agreed by both managers.</li>
+                        <li>If a manager involved in the agreement leaves the Top 100 game world.</li>
+                        <li>If a manager involved in the agreement changes clubs within Top 100.</li>
+                        <li>If, subsequent to the agreement but prior to the transfer's completion, one of the managers has a transfer ban imposed, the other party has the right to withdraw from the agreement.</li>
+                    </ul>
+                    
+                    <h4>Sanctions</h4>
+                    <p>Cancelling an agreed deal outside of the permitted exceptions will result in a transfer ban.</p>
+
+                    <h3>4.2 New Player Bidding Rules</h3>
+                    <p>Managers are limited to bidding a <strong>maximum of ONE MILLION (cash only)</strong> for any new player added to the Soccer Manager database. Bidding higher than this amount will result in a <strong>transfer ban</strong>.</p>
+
+                    <h3>4.3 Additional Transfer Laws</h3>
+                    <h4>Third-Party Ownership (TPO)</h4>
+                    <p>TPO is strictly banned. This refers to situations where a player is effectively controlled or passed through an intermediary club to circumvent rules or facilitate a transfer that would otherwise be impermissible.</p>
+                    
+                    <h4>"Holding" Clubs & Circumvention</h4>
+                    <p>The use of "friendly" or "holding" clubs to temporarily house players as a means to circumvent Top 100 rules is prohibited.</p>
+                </section>
+
+                <!-- Section 5: Competitions -->
+                <section id="section-5" class="section">
+                    <h1>Section 5: Competitions</h1>
+                    
+                    <h2>5.1 Overview of Top 100 Competitions</h2>
+                    <p>The Top 100 game world hosts a variety of official competitions designed to test managerial skill and provide diverse challenges:</p>
+                    <ul>
+                        <li>Top 100 Divisions 1-5 (League)</li>
+                        <li>Top 100 Cup</li>
+                        <li>Top 100 Shield</li>
+                        <li>Top 100 World Club Cup & Shield (WCC/WCS)</li>
+                        <li>Top 100 Youth Cup & Shield</li>
+                    </ul>
+
+                    <h2>5.2 League Rules (Divisions 1-5)</h2>
+                    <h3>5.2.1 Promotion & Relegation</h3>
+                    <p>The league structure of Top 100 is dynamic, with movement between divisions based on performance:</p>
+                    <ul>
+                        <li>Divisions 2-5 will see <strong>four (4) teams promoted</strong> to the division above</li>
+                        <li>Divisions 1-4 will see <strong>four (4) teams relegated</strong> to the division below</li>
+                    </ul>
+
+                    <h2>5.3 Fictional Extra Time (FET)</h2>
+                    <p>When knockout stage matches are drawn, the following tie-breaker mechanisms are employed:</p>
+                    
+                    <table class="rule-table">
+                        <thead>
+                            <tr>
+                                <th>Criterion</th>
+                                <th>Goal(s) Awarded</th>
+                                <th>Applicable To</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Most Possession</td>
+                                <td>1 goal</td>
+                                <td>One-Leg Ties; Two-Leg Ties (if proceeding to FET)</td>
+                            </tr>
+                            <tr>
+                                <td>Most Shots on Target</td>
+                                <td>1 goal</td>
+                                <td>One-Leg Ties; Two-Leg Ties (if proceeding to FET)</td>
+                            </tr>
+                            <tr>
+                                <td>Scored First Goal</td>
+                                <td>1 goal</td>
+                                <td>One-Leg Ties; Two-Leg Ties (if proceeding to FET)</td>
+                            </tr>
+                            <tr>
+                                <td>Highest (Possession % + Shots on Target) Figure</td>
+                                <td>1 deciding goal</td>
+                                <td>If still tied after the above three FET criteria applied</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h2>5.4 Youth Cup & Shield</h2>
+                    <h3>Player Eligibility</h3>
+                    <ul>
+                        <li>Players are generally eligible if they are <strong>21 or younger</strong> at the start of the season</li>
+                        <li>The specific cut-off date is announced via official channels</li>
+                        <li>Managers are responsible for verifying their squad's eligibility</li>
+                    </ul>
+                    
+                    <h3>Loans</h3>
+                    <p>Managers <strong>cannot loan youth players</strong> to or from other clubs for the Youth Cup/Shield.</p>
+                    
+                    <h3>Penalties for Overage Players</h3>
+                    <ul>
+                        <li>Playing an overage player results in an automatic forfeit (0-3 loss)</li>
+                        <li>If both teams play ineligible players, the result is a 0-0 draw with no points</li>
+                    </ul>
+                </section>
+
+                <!-- Section 6: Enforcement -->
+                <section id="section-6" class="section">
+                    <h1>Section 6: Rules Enforcement & Sanctions</h1>
+                    
+                    <h2>6.1 Reporting Rule Violations</h2>
+                    <p>To maintain the integrity of the Top 100 game world, managers have a responsibility to report suspected rule breaches through the correct channels:</p>
+                    
+                    <h3>Top 100 Rule Breaches (Transfers)</h3>
+                    <p>Suspected breaches of Top 100 specific transfer rules should be reported via Private Message to the designated admin (<strong>David Marsden</strong>). Such allegations should not be posted publicly in the News Feed.</p>
+                    
+                    <h3>Youth Cup Player Eligibility</h3>
+                    <p>If an opponent is suspected of fielding an ineligible (e.g., overage) player in the Youth Cup, this should be reported to David Marsden via Private Message as soon as possible, and no later than 10 pm the following Monday.</p>
+
+                    <h2>6.2 Transfer Bans</h2>
+                    <h3>6.2.1 Offences Leading to Bans</h3>
+                    <p>A manager may receive a transfer ban for the following offences:</p>
+                    <ul>
+                        <li>Exceeding the 50-player squad cap</li>
+                        <li>Cancelling an accepted or agreed transfer deal outside the 5-minute grace period</li>
+                        <li>Bidding higher than ONE MILLION (cash only) for a new player added to the SM database</li>
+                        <li>Signing a Youth Cup prize player despite being officially notified by the prize-winning manager to withdraw the bid</li>
+                        <li>Breaching other unspecified "additional transfer laws"</li>
+                    </ul>
+                    
+                    <h3>6.2.2 Duration & Restrictions</h3>
+                    <ul>
+                        <li><strong>Duration:</strong> A first offense typically results in a <strong>one (1) month</strong> transfer ban</li>
+                        <li><strong>Restrictions:</strong> While under a transfer ban, a manager can only conduct player cash sales to external clubs</li>
+                        <li><strong>Repeat Offenders:</strong> Will be asked to resign or may be removed from the Top 100 game world</li>
+                    </ul>
+                    
+                    <table class="rule-table">
+                        <thead>
+                            <tr>
+                                <th>Offense</th>
+                                <th>Penalty (1st Offense)</th>
+                                <th>Repeat Offense</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Exceeding 50-Player Squad Cap</td>
+                                <td>1 Month Ban</td>
+                                <td>Asked to resign or removed</td>
+                            </tr>
+                            <tr>
+                                <td>Cancelling Agreed Transfer Deal</td>
+                                <td>1 Month Ban</td>
+                                <td>Asked to resign or removed</td>
+                            </tr>
+                            <tr>
+                                <td>Bidding >1 Million for New Player</td>
+                                <td>1 Month Ban</td>
+                                <td>Asked to resign or removed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h2>6.3 Manager Sackings</h2>
+                    <h3>Grounds for Sacking</h3>
+                    <ul>
+                        <li><strong>Poor League Performance:</strong> Finishing in the bottom three (3) positions in any of the five divisions at the end of a season</li>
+                        <li><strong>Inactivity:</strong> Managers who are deemed inactive may not be offered their job back</li>
+                    </ul>
+                </section>
+
+                <!-- Section 7: Manager Pathway -->
+                <section id="section-7" class="section">
+                    <h1>Section 7: New Manager Pathway</h1>
+                    
+                    <div class="update">
+                        <h4>7.1 Top 100 Regen - Primary Entry Route (UPDATED)</h4>
+                        <p><strong>Top 100 Regen</strong> (<a href="https://top100regen.website/join" target="_blank">https://top100regen.website/join</a>) is the new ten-year anniversary celebration game world and serves as the primary pathway for new managers entering Top 100.</p>
+                        <ul>
+                            <li>Top 100 Regen will generate most, if not all, new managers entering Top 100</li>
+                            <li>This replaces previous feeder league arrangements</li>
+                            <li>New managers should join Top 100 Regen to demonstrate their commitment and ability before being considered for Top 100 clubs</li>
+                        </ul>
+                        <p><em>Note: Top 120 is no longer a feeder or waiting room game world for Top 100 (as of 20 August 2025).</em></p>
+                    </div>
+
+                    <h2>7.2 Manager Application Process</h2>
+                    <p>Prospective managers for Top 100 should:</p>
+                    <ul>
+                        <li>Join and actively participate in Top 100 Regen</li>
+                        <li>Demonstrate consistent activity, communication, and adherence to rules</li>
+                        <li>Apply for available positions when they become available through the official channels</li>
+                        <li>Be prepared to start in lower divisions and work their way up through performance</li>
+                    </ul>
+                </section>
+
+                <!-- Section 8: Rule Changes -->
+                <section id="section-8" class="section">
+                    <h1>Section 8: Rule Amendments & Queries</h1>
+                    
+                    <h2>8.1 Process for Rule Changes</h2>
+                    <p>The rules of the Top 100 game world are not static and can be amended through a participatory process:</p>
+                    <p>The <strong>Top 100 All-Manager Polls</strong>, which consists of all Top 100 managers deliberating and voting on proposed new rules or any changes to existing rules.</p>
+                    <p>This democratic approach to rule amendments ensures that the managerial community has a voice in shaping the regulations that govern their gameplay, fostering a sense of shared ownership and understanding.</p>
+
+                    <h2>8.2 Contacting Administration for Clarification</h2>
+                    <p>If a manager is unsure about the interpretation of a rule or requires clarification on any aspect of the Top 100 game world, they should seek guidance from the administration:</p>
+                    <ul>
+                        <li>The <strong>Top 100 FA (Admin Team)</strong> is responsible for providing advice and guidance on all Top 100 issues</li>
+                        <li>For specific objections or queries related to Top 100 transfer rules, managers should direct their communication via Private Message to the designated admin, <strong>David Marsden</strong></li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tocLinks = document.querySelectorAll('.toc-link');
+            const sections = document.querySelectorAll('.section');
+            const searchInput = document.getElementById('searchInput');
+            const scrollProgress = document.querySelector('.scroll-progress');
+
+            // Section switching
+            tocLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    
+                    // Remove active classes
+                    tocLinks.forEach(l => l.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active classes
+                    this.classList.add('active');
+                    document.querySelector(targetId).classList.add('active');
+                });
+            });
+
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const content = document.querySelector('.content');
+                
+                if (searchTerm) {
+                    // Simple search highlighting
+                    content.innerHTML = content.innerHTML.replace(
+                        new RegExp(`(${searchTerm})`, 'gi'),
+                        '<mark>$1</mark>'
+                    );
+                } else {
+                    // Remove highlights
+                    content.innerHTML = content.innerHTML.replace(
+                        /<mark>(.*?)<\/mark>/gi,
+                        '$1'
+                    );
+                }
+            });
+
+            // Scroll progress indicator
+            window.addEventListener('scroll', function() {
+                const scrolled = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                scrollProgress.style.width = scrolled + '%';
+            });
+
+            // Print functionality
+            window.print = function() {
+                window.print();
+            };
+        });
+    </script>
+</body>
+</html>

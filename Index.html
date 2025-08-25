@@ -249,7 +249,6 @@
             margin-bottom: 0.5rem;
         }
 
-        /* Special styling for corrections */
         .correction {
             background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
             border-left: 5px solid #f0ad4e;
@@ -781,189 +780,201 @@
     </main>
 
     <script>
-        // Navigation functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Get all elements
             const tocLinks = document.querySelectorAll('.toc-link');
             const navLinks = document.querySelectorAll('.nav-link');
             const sections = document.querySelectorAll('.section');
             const searchInput = document.getElementById('searchInput');
             const scrollProgress = document.querySelector('.scroll-progress');
-            let originalContent = {};
-
-            // Store original content for search restoration
+            
+            // Store original content for search
+            const originalSectionContent = new Map();
             sections.forEach(section => {
-                originalContent[section.id] = section.innerHTML;
+                originalSectionContent.set(section.id, section.innerHTML);
             });
-
-            // Section switching for TOC links
+            
+            // Function to show a specific section
+            function showSection(sectionId) {
+                console.log('Showing section:', sectionId);
+                
+                // Hide all sections
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show target section
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    console.log('Section activated:', sectionId);
+                } else {
+                    console.error('Section not found:', sectionId);
+                }
+                
+                // Update TOC active states
+                tocLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + sectionId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+            
+            // TOC link click handlers
             tocLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    
-                    // Remove active classes
-                    tocLinks.forEach(l => l.classList.remove('active'));
-                    sections.forEach(s => s.classList.remove('active'));
-                    
-                    // Add active classes
-                    this.classList.add('active');
-                    const targetSection = document.querySelector(targetId);
-                    if (targetSection) {
-                        targetSection.classList.add('active');
+                    const href = this.getAttribute('href');
+                    if (href && href.startsWith('#')) {
+                        const sectionId = href.substring(1);
+                        showSection(sectionId);
                     }
                 });
             });
-
-            // Navigation links functionality
+            
+            // Nav link handlers
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const target = this.getAttribute('href').substring(1);
+                    const href = this.getAttribute('href');
                     
-                    // Remove active classes
+                    // Update nav active states
                     navLinks.forEach(l => l.classList.remove('active'));
-                    tocLinks.forEach(l => l.classList.remove('active'));
-                    sections.forEach(s => s.classList.remove('active'));
-                    
-                    // Add active class to nav
                     this.classList.add('active');
                     
-                    if (target === 'home') {
-                        // Show home section
-                        document.querySelector('#section-home').classList.add('active');
-                        document.querySelector('a[href="#section-home"]').classList.add('active');
-                    } else if (target === 'updates') {
-                        // Show home section with updates highlighted
-                        document.querySelector('#section-home').classList.add('active');
-                        document.querySelector('a[href="#section-home"]').classList.add('active');
-                        // Scroll to updates on the page
+                    if (href === '#home') {
+                        showSection('section-home');
+                    } else if (href === '#updates') {
+                        showSection('section-home');
+                        // Highlight updates after a short delay
                         setTimeout(() => {
                             const correctionDiv = document.querySelector('.correction');
                             if (correctionDiv) {
-                                correctionDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 correctionDiv.style.animation = 'pulse 2s ease-in-out';
+                                correctionDiv.scrollIntoView({ 
+                                    behavior: 'smooth', 
+                                    block: 'center' 
+                                });
                             }
                         }, 100);
-                    } else if (target === 'search') {
-                        // Focus search input
-                        searchInput.focus();
-                        searchInput.select();
+                    } else if (href === '#search') {
+                        if (searchInput) {
+                            searchInput.focus();
+                            searchInput.select();
+                        }
                     }
                 });
             });
-
-            // Enhanced search functionality
+            
+            // Search functionality
             let searchTimeout;
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-                
-                // Clear previous timeout
-                clearTimeout(searchTimeout);
-                
-                // Debounce search
-                searchTimeout = setTimeout(() => {
-                    if (searchTerm.length > 0) {
-                        performSearch(searchTerm);
-                    } else {
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    
+                    clearTimeout(searchTimeout);
+                    
+                    if (searchTerm.length === 0) {
                         clearSearch();
+                        return;
                     }
-                }, 300);
-            });
-
+                    
+                    searchTimeout = setTimeout(() => {
+                        performSearch(searchTerm);
+                    }, 300);
+                });
+            }
+            
             function performSearch(searchTerm) {
-                let foundResults = false;
+                console.log('Searching for:', searchTerm);
+                let hasResults = false;
                 
                 sections.forEach(section => {
-                    // Restore original content
-                    section.innerHTML = originalContent[section.id];
+                    // Restore original content first
+                    const originalContent = originalSectionContent.get(section.id);
+                    if (originalContent) {
+                        section.innerHTML = originalContent;
+                    }
                     
                     const textContent = section.textContent.toLowerCase();
                     if (textContent.includes(searchTerm)) {
-                        foundResults = true;
-                        // Highlight search term
-                        highlightSearchTerm(section, searchTerm);
+                        hasResults = true;
+                        // Highlight the search term
+                        highlightText(section, searchTerm);
                         section.style.display = 'block';
                     } else {
                         section.style.display = 'none';
                     }
-                    
-                    // Remove active classes first
-                    section.classList.remove('active');
                 });
-
-                // If we have results, show them
-                if (foundResults) {
-                    // Find first section with results and make it active
-                    const firstResult = Array.from(sections).find(section => 
-                        section.style.display !== 'none'
+                
+                // Show first result
+                if (hasResults) {
+                    const firstVisibleSection = Array.from(sections).find(s => 
+                        s.style.display !== 'none'
                     );
-                    if (firstResult) {
-                        firstResult.classList.add('active');
+                    if (firstVisibleSection) {
+                        sections.forEach(s => s.classList.remove('active'));
+                        firstVisibleSection.classList.add('active');
                         
-                        // Update TOC active state
-                        tocLinks.forEach(l => l.classList.remove('active'));
-                        const correspondingTocLink = document.querySelector(`a[href="#${firstResult.id}"]`);
-                        if (correspondingTocLink) {
-                            correspondingTocLink.classList.add('active');
+                        // Update TOC
+                        tocLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === '#' + firstVisibleSection.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                }
+            }
+            
+            function highlightText(element, searchTerm) {
+                const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                
+                function highlightNode(node) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        const text = node.textContent;
+                        if (regex.test(text)) {
+                            const highlightedHTML = text.replace(regex, '<mark>$1</mark>');
+                            const wrapper = document.createElement('span');
+                            wrapper.innerHTML = highlightedHTML;
+                            node.parentNode.replaceChild(wrapper, node);
                         }
+                    } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+                        Array.from(node.childNodes).forEach(highlightNode);
                     }
                 }
+                
+                highlightNode(element);
             }
-
-            function highlightSearchTerm(element, searchTerm) {
-                const walker = document.createTreeWalker(
-                    element,
-                    NodeFilter.SHOW_TEXT,
-                    null,
-                    false
-                );
-
-                const textNodes = [];
-                let node;
-                while (node = walker.nextNode()) {
-                    textNodes.push(node);
-                }
-
-                textNodes.forEach(textNode => {
-                    const text = textNode.textContent;
-                    const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
-                    
-                    if (regex.test(text)) {
-                        const highlightedText = text.replace(regex, '<mark style="background-color: yellow; padding: 2px;">$1</mark>');
-                        const wrapper = document.createElement('span');
-                        wrapper.innerHTML = highlightedText;
-                        textNode.parentNode.replaceChild(wrapper, textNode);
-                    }
-                });
-            }
-
-            function escapeRegex(string) {
-                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            }
-
+            
             function clearSearch() {
-                // Restore all sections
+                console.log('Clearing search');
+                
+                // Restore all content and visibility
                 sections.forEach(section => {
-                    section.innerHTML = originalContent[section.id];
+                    const originalContent = originalSectionContent.get(section.id);
+                    if (originalContent) {
+                        section.innerHTML = originalContent;
+                    }
                     section.style.display = '';
-                    section.classList.remove('active');
                 });
                 
                 // Show home section
-                document.querySelector('#section-home').classList.add('active');
-                
-                // Reset TOC
-                tocLinks.forEach(l => l.classList.remove('active'));
-                document.querySelector('a[href="#section-home"]').classList.add('active');
+                showSection('section-home');
             }
-
-            // Scroll progress indicator
-            window.addEventListener('scroll', function() {
-                const scrolled = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-                scrollProgress.style.width = Math.min(100, Math.max(0, scrolled)) + '%';
-            });
-
-            // Add pulse animation
+            
+            // Scroll progress
+            if (scrollProgress) {
+                window.addEventListener('scroll', function() {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const scrollPercent = (scrollTop / scrollHeight) * 100;
+                    scrollProgress.style.width = Math.min(100, Math.max(0, scrollPercent)) + '%';
+                });
+            }
+            
+            // Add required CSS
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes pulse {
@@ -971,18 +982,18 @@
                     50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(52, 152, 219, 0); }
                     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
                 }
-                
                 mark {
-                    background-color: yellow;
-                    padding: 2px 4px;
-                    border-radius: 3px;
+                    background-color: #ffeb3b;
+                    padding: 1px 3px;
+                    border-radius: 2px;
                     font-weight: bold;
                 }
             `;
             document.head.appendChild(style);
-
-            // Initialize - show home section by default
-            document.querySelector('#section-home').classList.add('active');
+            
+            // Initialize
+            console.log('Initializing with home section');
+            showSection('section-home');
         });
     </script>
 </body>

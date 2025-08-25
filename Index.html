@@ -784,11 +784,18 @@
         // Navigation functionality
         document.addEventListener('DOMContentLoaded', function() {
             const tocLinks = document.querySelectorAll('.toc-link');
+            const navLinks = document.querySelectorAll('.nav-link');
             const sections = document.querySelectorAll('.section');
             const searchInput = document.getElementById('searchInput');
             const scrollProgress = document.querySelector('.scroll-progress');
+            let originalContent = {};
 
-            // Section switching
+            // Store original content for search restoration
+            sections.forEach(section => {
+                originalContent[section.id] = section.innerHTML;
+            });
+
+            // Section switching for TOC links
             tocLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -800,40 +807,182 @@
                     
                     // Add active classes
                     this.classList.add('active');
-                    document.querySelector(targetId).classList.add('active');
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
                 });
             });
 
-            // Search functionality
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const content = document.querySelector('.content');
-                
-                if (searchTerm) {
-                    // Simple search highlighting
-                    content.innerHTML = content.innerHTML.replace(
-                        new RegExp(`(${searchTerm})`, 'gi'),
-                        '<mark>$1</mark>'
-                    );
-                } else {
-                    // Remove highlights
-                    content.innerHTML = content.innerHTML.replace(
-                        /<mark>(.*?)<\/mark>/gi,
-                        '$1'
-                    );
-                }
+            // Navigation links functionality
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('href').substring(1);
+                    
+                    // Remove active classes
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    tocLinks.forEach(l => l.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to nav
+                    this.classList.add('active');
+                    
+                    if (target === 'home') {
+                        // Show home section
+                        document.querySelector('#section-home').classList.add('active');
+                        document.querySelector('a[href="#section-home"]').classList.add('active');
+                    } else if (target === 'updates') {
+                        // Show home section with updates highlighted
+                        document.querySelector('#section-home').classList.add('active');
+                        document.querySelector('a[href="#section-home"]').classList.add('active');
+                        // Scroll to updates on the page
+                        setTimeout(() => {
+                            const correctionDiv = document.querySelector('.correction');
+                            if (correctionDiv) {
+                                correctionDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                correctionDiv.style.animation = 'pulse 2s ease-in-out';
+                            }
+                        }, 100);
+                    } else if (target === 'search') {
+                        // Focus search input
+                        searchInput.focus();
+                        searchInput.select();
+                    }
+                });
             });
+
+            // Enhanced search functionality
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                
+                // Clear previous timeout
+                clearTimeout(searchTimeout);
+                
+                // Debounce search
+                searchTimeout = setTimeout(() => {
+                    if (searchTerm.length > 0) {
+                        performSearch(searchTerm);
+                    } else {
+                        clearSearch();
+                    }
+                }, 300);
+            });
+
+            function performSearch(searchTerm) {
+                let foundResults = false;
+                
+                sections.forEach(section => {
+                    // Restore original content
+                    section.innerHTML = originalContent[section.id];
+                    
+                    const textContent = section.textContent.toLowerCase();
+                    if (textContent.includes(searchTerm)) {
+                        foundResults = true;
+                        // Highlight search term
+                        highlightSearchTerm(section, searchTerm);
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                    
+                    // Remove active classes first
+                    section.classList.remove('active');
+                });
+
+                // If we have results, show them
+                if (foundResults) {
+                    // Find first section with results and make it active
+                    const firstResult = Array.from(sections).find(section => 
+                        section.style.display !== 'none'
+                    );
+                    if (firstResult) {
+                        firstResult.classList.add('active');
+                        
+                        // Update TOC active state
+                        tocLinks.forEach(l => l.classList.remove('active'));
+                        const correspondingTocLink = document.querySelector(`a[href="#${firstResult.id}"]`);
+                        if (correspondingTocLink) {
+                            correspondingTocLink.classList.add('active');
+                        }
+                    }
+                }
+            }
+
+            function highlightSearchTerm(element, searchTerm) {
+                const walker = document.createTreeWalker(
+                    element,
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+
+                const textNodes = [];
+                let node;
+                while (node = walker.nextNode()) {
+                    textNodes.push(node);
+                }
+
+                textNodes.forEach(textNode => {
+                    const text = textNode.textContent;
+                    const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+                    
+                    if (regex.test(text)) {
+                        const highlightedText = text.replace(regex, '<mark style="background-color: yellow; padding: 2px;">$1</mark>');
+                        const wrapper = document.createElement('span');
+                        wrapper.innerHTML = highlightedText;
+                        textNode.parentNode.replaceChild(wrapper, textNode);
+                    }
+                });
+            }
+
+            function escapeRegex(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            function clearSearch() {
+                // Restore all sections
+                sections.forEach(section => {
+                    section.innerHTML = originalContent[section.id];
+                    section.style.display = '';
+                    section.classList.remove('active');
+                });
+                
+                // Show home section
+                document.querySelector('#section-home').classList.add('active');
+                
+                // Reset TOC
+                tocLinks.forEach(l => l.classList.remove('active'));
+                document.querySelector('a[href="#section-home"]').classList.add('active');
+            }
 
             // Scroll progress indicator
             window.addEventListener('scroll', function() {
                 const scrolled = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-                scrollProgress.style.width = scrolled + '%';
+                scrollProgress.style.width = Math.min(100, Math.max(0, scrolled)) + '%';
             });
 
-            // Print functionality
-            window.print = function() {
-                window.print();
-            };
+            // Add pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); }
+                    50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(52, 152, 219, 0); }
+                    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
+                }
+                
+                mark {
+                    background-color: yellow;
+                    padding: 2px 4px;
+                    border-radius: 3px;
+                    font-weight: bold;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Initialize - show home section by default
+            document.querySelector('#section-home').classList.add('active');
         });
     </script>
 </body>

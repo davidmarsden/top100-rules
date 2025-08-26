@@ -48,7 +48,7 @@
             transform: rotate(-30deg);
             background-image: url('https://anotherurl.wordpress.com/wp-content/uploads/2025/04/original-logo.png');
             background-repeat: no-repeat;
-            background-size: contain;
+            background-size: cover;
         }
         
         .container {
@@ -67,17 +67,18 @@
             color: white;
         }
         
-        .logo {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 1rem;
-            background-image: url('https://anotherurl.wordpress.com/wp-content/uploads/2025/04/original-logo.png');
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
+  .logo {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1rem;
+    background-image: url('https://anotherurl.wordpress.com/wp-content/uploads/2025/04/original-logo.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover; /* Changed from contain to cover */
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    overflow: hidden; /* Ensures clean circular crop */
+}
         
         .title {
             font-size: 3rem;

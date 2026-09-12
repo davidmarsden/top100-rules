@@ -1,0 +1,11 @@
+[build]
+  publish = "."
+  command = ""
+
+# The standalone August 2025 rulebook is retained in Git history only.
+# The current canonical rulebook lives on the main Top 100 site.
+[[redirects]]
+  from = "/*"
+  to = "https://smtop100.blog/rules/"
+  status = 301
+  force = true
